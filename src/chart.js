@@ -53,6 +53,7 @@ require('./charts/Chart.Scatter')(Chart);
 var plugins = [];
 
 plugins.push(
+	require('./plugins/plugin.tickAutoSkip.js')(Chart),
     require('./plugins/plugin.filler.js')(Chart),
     require('./plugins/plugin.legend.js')(Chart),
     require('./plugins/plugin.title.js')(Chart)

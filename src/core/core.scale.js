@@ -517,10 +517,25 @@ module.exports = function(Chart) {
 			var gridLines = options.gridLines;
 			var scaleLabel = options.scaleLabel;
 
+			var itemsToDraw = [];
+
+			var tl = gridLines.drawTicks ? gridLines.tickMarkLength : 0;
+			var isHorizontal = me.isHorizontal();
 			var isRotated = me.labelRotation !== 0;
+
+			var tickFontColor = helpers.getValueOrDefault(optionTicks.fontColor, globalDefaults.defaultFontColor);
+			var tickFont = parseFontOptions(optionTicks);
+			var majorTickFontColor = helpers.getValueOrDefault(optionMajorTicks.fontColor, globalDefaults.defaultFontColor);
+			var majorTickFont = parseFontOptions(optionMajorTicks);
+
+			var scaleLabelFontColor = helpers.getValueOrDefault(scaleLabel.fontColor, globalDefaults.defaultFontColor);
+			var scaleLabelFont = parseFontOptions(scaleLabel);
+
+			var labelRotationRadians = helpers.toRadians(me.labelRotation);
+
+			/*
 			var skipRatio;
 			var useAutoskipper = optionTicks.autoSkip;
-			var isHorizontal = me.isHorizontal();
 
 			// figure out the maximum number of gridlines to show
 			var maxTicks;
@@ -528,22 +543,11 @@ module.exports = function(Chart) {
 				maxTicks = optionTicks.maxTicksLimit;
 			}
 
-			var tickFontColor = helpers.getValueOrDefault(optionTicks.fontColor, globalDefaults.defaultFontColor);
-			var tickFont = parseFontOptions(optionTicks);
-			var majorTickFontColor = helpers.getValueOrDefault(optionMajorTicks.fontColor, globalDefaults.defaultFontColor);
-			var majorTickFont = parseFontOptions(optionMajorTicks);
-
-			var tl = gridLines.drawTicks ? gridLines.tickMarkLength : 0;
-
-			var scaleLabelFontColor = helpers.getValueOrDefault(scaleLabel.fontColor, globalDefaults.defaultFontColor);
-			var scaleLabelFont = parseFontOptions(scaleLabel);
-
-			var labelRotationRadians = helpers.toRadians(me.labelRotation);
 			var cosRotation = Math.cos(labelRotationRadians);
 			var longestRotatedLabel = me.longestLabelWidth * cosRotation;
+			*/
 
-			var itemsToDraw = [];
-
+			/* JM: Move to plugin
 			if (isHorizontal) {
 				skipRatio = false;
 
@@ -566,6 +570,7 @@ module.exports = function(Chart) {
 					skipRatio = false;
 				}
 			}
+			*/
 
 
 			var xTickStart = options.position === 'right' ? me.left : me.right - tl;
@@ -574,12 +579,18 @@ module.exports = function(Chart) {
 			var yTickEnd = options.position === 'bottom' ? me.top + tl : me.bottom;
 
 			helpers.each(me.ticks, function(tick, index) {
+				// Don't draw skipped ticks
+				if (me.tickSkip && me.tickSkip.indexOf(index) !== -1) {
+					return;
+				}
+
 				var label = (tick && tick.value) || tick;
 				// If the callback returned a null or undefined value, do not draw this line
 				if (label === undefined || label === null) {
 					return;
 				}
 
+				/* JM: Move to plugin
 				var autoSkip = index % skipRatio > 0;
 				var autoSkipLastTick = index + skipRatio >= me.ticks.length && optionTicks.autoSkipLast;
 				var includeLastTick = me.ticks.length === index + 1 && optionTicks.autoSkipLast;
@@ -587,6 +598,7 @@ module.exports = function(Chart) {
 				if ((autoSkip || autoSkipLastTick) && !includeLastTick) {
 					return;
 				}
+				*/
 
 				var lineWidth, lineColor, borderDash, borderDashOffset;
 				if (index === (typeof me.zeroLineIndex !== 'undefined' ? me.zeroLineIndex : 0)) {
